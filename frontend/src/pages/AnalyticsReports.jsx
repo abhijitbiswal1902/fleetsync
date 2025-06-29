@@ -14,11 +14,14 @@ const AnalyticsReports = () => {
     const fetchReports = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/api/fleet/report`);
-        setReports(response.data);
+        const response = await axios.get(`${API_BASE_URL}/api/fleet/performance`);
+        // Ensure we have an array of data
+        const data = Array.isArray(response.data) ? response.data : [];
+        setReports(data);
       } catch (error) {
         console.error('Error fetching reports:', error);
         setError('Failed to load analytics data. Please try again later.');
+        setReports([]); // Set empty array to prevent map errors
       } finally {
         setLoading(false);
       }
@@ -102,25 +105,35 @@ const AnalyticsReports = () => {
             <p>Loading reports...</p>
           ) : error ? (
             <p>{error}</p>
-          ) : reports ? (
+          ) : reports && reports.length > 0 ? (
             <table>
               <thead>
                 <tr>
-                  <th>Vehicle ID</th>
-                  <th>Fuel Usage</th>
-                  <th>Maintenance Costs</th>
-                  <th>Average Speed</th>
-                  <th>Distance Covered</th>
+                  <th>Vehicle</th>
+                  <th>Route</th>
+                  <th>Distance (km)</th>
+                  <th>Fuel Cost</th>
+                  <th>Toll Cost</th>
+                  <th>Driver Expense</th>
+                  <th>Revenue</th>
+                  <th>Total Cost</th>
+                  <th>Profit</th>
+                  <th>Profit %</th>
                 </tr>
               </thead>
               <tbody>
                 {reports.map((report, index) => (
                   <tr key={index}>
-                    <td>{report.vehicleId}</td>
-                    <td>{report.fuelUsage} liters</td>
-                    <td>${report.maintenanceCost}</td>
-                    <td>{report.averageSpeed} km/h</td>
-                    <td>{report.distanceCovered} km</td>
+                    <td>{report.vehicle}</td>
+                    <td>{report.from} → {report.to}</td>
+                    <td>{report.distance}</td>
+                    <td>${report.fuelCost}</td>
+                    <td>${report.tollCost}</td>
+                    <td>${report.driverExpense}</td>
+                    <td>${report.revenue}</td>
+                    <td>${report.totalCost}</td>
+                    <td>${report.profit.toFixed(2)}</td>
+                    <td>{report.profitPercent.toFixed(2)}%</td>
                   </tr>
                 ))}
               </tbody>
