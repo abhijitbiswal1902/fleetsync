@@ -5,7 +5,8 @@ function CostAnalysis() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8001/api/fleet/cost-analysis')
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
+    fetch(API_BASE_URL + '/api/fleet/cost-analysis')
       .then(res => res.json())
       .then(setData);
   }, []);

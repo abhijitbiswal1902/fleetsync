@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './CustomReport.css';  // Importing the CSS file
 
 function CustomReport() {
   const [data, setData] = useState([]);
   const [vehicle, setVehicle] = useState('');
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     let query = [];
     if (vehicle) query.push(`vehicle=${vehicle}`);
     const queryString = query.length ? '?' + query.join('&') : '';
 
-    fetch('http://localhost:8001/api/fleet/custom' + queryString)
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
+    fetch(API_BASE_URL + '/api/fleet/custom' + queryString)
       .then(res => res.json())
       .then(setData);
-  };
+  }, [vehicle]);
 
   useEffect(() => {
     fetchData();
-  }, [vehicle]);  // Fetch data whenever vehicle changes
+  }, [fetchData]);  // Now includes fetchData dependency
 
   return (
     <div className="custom-container"> {/* Main wrapper for centering */}

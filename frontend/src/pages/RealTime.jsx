@@ -5,7 +5,8 @@ function RealTime() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8001/api/fleet/real-time')
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
+    fetch(API_BASE_URL + '/api/fleet/real-time')
       .then(res => res.json())
       .then(setData)
       .catch(err => console.error("Error fetching real-time data:", err));

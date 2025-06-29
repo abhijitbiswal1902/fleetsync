@@ -4,6 +4,18 @@ import './HomePage.css'; // Assume styling is defined in an external CSS file.
 import Navbar from './Navbar'; 
 
 const HomePage = () => {
+  const handleGetStarted = () => {
+    const featuresSection = document.querySelector('.features');
+    if (featuresSection) {
+      const navbarHeight = 80; // Approximate navbar height
+      const elementPosition = featuresSection.offsetTop - navbarHeight;
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <div className="homepage">
       {/* Hero Section */}
@@ -13,7 +25,7 @@ const HomePage = () => {
           <h1>FleetSync</h1>
           <p>Empowering the people who run the physical economy.</p>
           <p>Streamline your operations with our powerful fleet management solutions.</p>
-          <button className="cta-button">Get Started</button>
+          <button className="cta-button" onClick={handleGetStarted}>Get Started</button>
         </div>
         <div className="rightcorner-image">
           {/* <img src="/rightcorner.jpg" alt="Fleet Management" /> */}

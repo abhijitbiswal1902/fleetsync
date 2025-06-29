@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './signin-signup.css';
 
@@ -7,31 +9,63 @@ const SignInPage = () => {
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleSignIn = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/users/login', credentials, {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
+      const res = await axios.post(API_BASE_URL + '/api/users/login', credentials, {
         withCredentials: true,
       });
-      alert(res.data.message || 'Login successful!');
+      
+      // Save user data and redirect
+      login({
+        email: credentials.email,
+        token: res.data.token,
+        ...res.data.user
+      });
+      
+      alert('Login successful!');
+      navigate('/');
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="form-container">
       <h2>Sign In</h2>
-      <form onSubmit={handleSignIn}>
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <button type="submit">Login</button>
+      <form onSubmit={handleSubmit}>
+        <input 
+          name="email" 
+          type="email" 
+          placeholder="Email" 
+          onChange={handleChange} 
+          required 
+          disabled={loading}
+        />
+        <input 
+          name="password" 
+          type="password" 
+          placeholder="Password" 
+          onChange={handleChange} 
+          required 
+          disabled={loading}
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
         <a href="/signup">Signup?</a>
       </form>
     </div>

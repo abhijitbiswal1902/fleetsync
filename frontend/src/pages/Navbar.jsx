@@ -1,8 +1,105 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';  // Assuming you have a CSS file for styling
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const handleGetStarted = () => {
+    if (location.pathname === '/') {
+      // If on home page, scroll to features section
+      const featuresSection = document.querySelector('.features');
+      if (featuresSection) {
+        const navbarHeight = 80; // Approximate navbar height
+        const elementPosition = featuresSection.offsetTop - navbarHeight;
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      // If on other pages, navigate to home and scroll to features
+      navigate('/');
+      setTimeout(() => {
+        const featuresSection = document.querySelector('.features');
+        if (featuresSection) {
+          const navbarHeight = 80; // Approximate navbar height
+          const elementPosition = featuresSection.offsetTop - navbarHeight;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const handleAboutUs = () => {
+    if (location.pathname === '/') {
+      // If on home page, scroll to about us section
+      const aboutUsSection = document.querySelector('.about-us');
+      if (aboutUsSection) {
+        const navbarHeight = 80; // Approximate navbar height
+        const elementPosition = aboutUsSection.offsetTop - navbarHeight;
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      // If on other pages, navigate to home and scroll to about us
+      navigate('/');
+      setTimeout(() => {
+        const aboutUsSection = document.querySelector('.about-us');
+        if (aboutUsSection) {
+          const navbarHeight = 80; // Approximate navbar height
+          const elementPosition = aboutUsSection.offsetTop - navbarHeight;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const handleFeaturesScroll = () => {
+    if (location.pathname === '/') {
+      // If on home page, scroll to features section
+      const featuresSection = document.querySelector('.features');
+      if (featuresSection) {
+        const navbarHeight = 80; // Approximate navbar height
+        const elementPosition = featuresSection.offsetTop - navbarHeight;
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      // If on other pages, navigate to home and scroll to features
+      navigate('/');
+      setTimeout(() => {
+        const featuresSection = document.querySelector('.features');
+        if (featuresSection) {
+          const navbarHeight = 80; // Approximate navbar height
+          const elementPosition = featuresSection.offsetTop - navbarHeight;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -17,44 +114,30 @@ const Navbar = () => {
             <Link to="/route-optimization" className="dropdown-item">Route Optimizer</Link>
           </div>
         </li>
-        <li className="nav-item dropdown">
-          <Link to="/solutions" className="nav-link">Solutions</Link>
-          <div className="dropdown-menu">
-            <Link to="/solution1" className="dropdown-item">Fleet Management Solutions</Link>
-            <Link to="/solution2" className="dropdown-item">Cost Reduction Solutions</Link>
-          </div>
+        <li className="nav-item">
+          <button onClick={handleFeaturesScroll} className="nav-link">Solutions</button>
         </li>
-        <li className="nav-item dropdown">
-          <Link to="/resources" className="nav-link">Resources</Link>
-          <div className="dropdown-menu">
-            <Link to="/docs" className="dropdown-item">Docs</Link>
-            <Link to="/tutorials" className="dropdown-item">Tutorials</Link>
-            <Link to="/blog" className="dropdown-item">Blog</Link>
-          </div>
+        <li className="nav-item">
+          <button onClick={handleFeaturesScroll} className="nav-link">Resources</button>
         </li>
-        <li className="nav-item dropdown">
-          <Link to="/company" className="nav-link">Company</Link>
-          <div className="dropdown-menu">
-            <Link to="/about-us" className="dropdown-item">About Us</Link>
-            <Link to="/careers" className="dropdown-item">Careers</Link>
-            <Link to="/team" className="dropdown-item">Team</Link>
-          </div>
+        <li className="nav-item">
+          <button onClick={handleAboutUs} className="nav-link">About Us</button>
         </li>
-        <li className="nav-item dropdown">
-          <Link to="/customers" className="nav-link">Customers</Link>
-          <div className="dropdown-menu">
-            <Link to="/case-studies" className="dropdown-item">Case Studies</Link>
-            <Link to="/testimonials" className="dropdown-item">Testimonials</Link>
-          </div>
+        <li className="nav-item">
+          <button onClick={handleFeaturesScroll} className="nav-link">Customers</button>
         </li>
-        <li className="nav-item dropdown">
+        <li className="nav-item">
           <a href="mailto:abhijitbiswal1902@gmail.com" className="nav-link">Contact</a>
         </li>
         <li className="nav-item">
-          <Link to="/login" className="nav-link">Login</Link>
+          {user ? (
+            <button onClick={handleLogout} className="nav-link logout-btn">Logout</button>
+          ) : (
+            <Link to="/login" className="nav-link">Login</Link>
+          )}
         </li>
         <li className="nav-item">
-          <Link to="/get-started" className="nav-link cta-button">Get Started</Link>
+          <button onClick={handleGetStarted} className="nav-link cta-button">Get Started</button>
         </li>
       </ul>
     </nav>

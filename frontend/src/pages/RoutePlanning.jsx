@@ -75,7 +75,7 @@ function RoutePlanning() {
       );
     });
     setFilteredRoutes(filtered);
-  }, [selectedSource, selectedDestination, filters]);
+  }, [selectedSource, selectedDestination, filters, routes]);
 
   return (
     <div className="routeplanning-container">

@@ -6,7 +6,8 @@ function FleetReport() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8001/api/performance')
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
+    fetch(API_BASE_URL + '/api/performance')
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();

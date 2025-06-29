@@ -37,9 +37,15 @@ require('dotenv').config();
 
 const app = express();
 const Server = http.createServer(app);
+
+// Get allowed origins from environment variables
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ['https://fleetsync-app.vercel.app', 'http://localhost:3000'];
+
 const io = socketio(Server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
   }
 });
@@ -47,7 +53,7 @@ const io = socketio(Server, {
 connectDB();
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());
@@ -59,8 +65,11 @@ app.use('/api/fleet', fleetRoutes);
 app.get("/live-tracking", (req, res) => {
   res.send("Socket page");
 });
-// app.use(express.static(path.join(__dirname, 'client/build')));
 
+// Health check endpoint for Render
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK", message: "Server is running" });
+});
 
 // Socket.io connection
 io.on('connection', (socket) => {
