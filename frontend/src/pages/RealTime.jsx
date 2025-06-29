@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './RealTime.css'; // Ensure this CSS file is in the same folder or adjust the path
 
-function RealTime() {
-  const [data, setData] = useState([]);
+const RealTime = () => {
+  const [trackingData, setTrackingData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
-    fetch(API_BASE_URL + '/api/fleet/real-time')
-      .then(res => res.json())
-      .then(setData)
-      .catch(err => console.error("Error fetching real-time data:", err));
+    fetchTrackingData();
+    // Set up real-time updates every 5 seconds
+    const interval = setInterval(fetchTrackingData, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const fetchTrackingData = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/fleet/tracking`);
+      setTrackingData(response.data);
+    } catch (error) {
+      console.error('Error fetching tracking data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="realtime-container">
@@ -29,12 +42,12 @@ function RealTime() {
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
+            {trackingData.length === 0 ? (
               <tr>
                 <td colSpan="7">Loading data...</td>
               </tr>
             ) : (
-              data.map((row, idx) => (
+              trackingData.map((row, idx) => (
                 <tr key={idx}>
                   <td>{row.from} → {row.to}</td>
                   <td>{row.vehicle}</td>
@@ -51,6 +64,6 @@ function RealTime() {
       </div>
     </div>
   );
-}
+};
 
 export default RealTime;

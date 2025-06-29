@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './signin-signup.css';
 
 const SignUpPage = () => {
@@ -22,7 +23,6 @@ const SignUpPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
       const res = await axios.post(API_BASE_URL + '/api/users/register', formData, {
         withCredentials: true,
       });

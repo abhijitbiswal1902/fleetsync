@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './FleetReport.css';
 
-function FleetReport() {
-  const [data, setData] = useState([]);
+const FleetReport = () => {
+  const [fleetData, setFleetData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
-    fetch(API_BASE_URL + '/api/performance')
-      .then(res => {
-        if (!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-      })
-      .then(setData)
-      .catch(err => {
-        console.error('Fetch error:', err);
-        setError('Failed to load fleet performance data.');
-      });
+    fetchFleetData();
   }, []);
+
+  const fetchFleetData = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/fleet/reports`);
+      setFleetData(response.data);
+    } catch (error) {
+      console.error('Error fetching fleet data:', error);
+      setError('Failed to load fleet performance data.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fleet-container">
@@ -25,7 +30,7 @@ function FleetReport() {
         <h2 className="heading">📈 Fleet Performance Report</h2>
         {error ? (
           <p className="error">{error}</p>
-        ) : data.length === 0 ? (
+        ) : loading ? (
           <p className="loading">Loading data...</p>
         ) : (
           <table className="fleet-table">
@@ -44,7 +49,7 @@ function FleetReport() {
               </tr>
             </thead>
             <tbody>
-              {data.map((row, idx) => (
+              {fleetData.map((row, idx) => (
                 <tr key={idx}>
                   <td>{row.vehicle}</td>
                   <td>{row.from} → {row.to}</td>
@@ -64,6 +69,6 @@ function FleetReport() {
       </div>
     </div>
   );
-}
+};
 
 export default FleetReport;

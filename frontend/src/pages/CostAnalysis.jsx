@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './CostAnalysis.css';  // Importing the CSS file
 
-function CostAnalysis() {
-  const [data, setData] = useState([]);
+const CostAnalysis = () => {
+  const [costData, setCostData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
-    fetch(API_BASE_URL + '/api/fleet/cost-analysis')
-      .then(res => res.json())
-      .then(setData);
+    fetchCostData();
   }, []);
+
+  const fetchCostData = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/fleet/costs`);
+      setCostData(response.data);
+    } catch (error) {
+      console.error('Error fetching cost data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className='page'>
@@ -27,7 +38,7 @@ function CostAnalysis() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, idx) => (
+            {costData.map((row, idx) => (
               <tr key={idx}>
                 <td>{row.from} → {row.to}</td>
                 <td>{row.totalCost}</td>

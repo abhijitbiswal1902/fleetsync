@@ -1,24 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import './CustomReport.css';  // Importing the CSS file
 
-function CustomReport() {
+const CustomReport = () => {
   const [data, setData] = useState([]);
   const [vehicle, setVehicle] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(() => {
-    let query = [];
-    if (vehicle) query.push(`vehicle=${vehicle}`);
-    const queryString = query.length ? '?' + query.join('&') : '';
+  const fetchData = async () => {
+    try {
+      let query = [];
+      if (vehicle) query.push(`vehicle=${vehicle}`);
+      const queryString = query.length ? '?' + query.join('&') : '';
 
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
-    fetch(API_BASE_URL + '/api/fleet/custom' + queryString)
-      .then(res => res.json())
-      .then(setData);
-  }, [vehicle]);
+      const response = await axios.get(`${API_BASE_URL}/api/fleet/custom${queryString}`);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching custom report data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);  // Now includes fetchData dependency
+  }, [vehicle]);
 
   return (
     <div className="custom-container"> {/* Main wrapper for centering */}
@@ -47,21 +54,31 @@ function CustomReport() {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx}>
-                <td>{row.from} → {row.to}</td>
-                <td>{row.vehicle}</td>
-                <td>{row.totalCost}</td>
-                <td>{row.revenue}</td>
-                <td>{row.profit}</td>
-                <td>{row.profitPercent.toFixed(2)}%</td>
+            {loading ? (
+              <tr>
+                <td colSpan="6">Loading data...</td>
               </tr>
-            ))}
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan="6">No data available</td>
+              </tr>
+            ) : (
+              data.map((row, idx) => (
+                <tr key={idx}>
+                  <td>{row.from} → {row.to}</td>
+                  <td>{row.vehicle}</td>
+                  <td>{row.totalCost}</td>
+                  <td>{row.revenue}</td>
+                  <td>{row.profit}</td>
+                  <td>{row.profitPercent.toFixed(2)}%</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
     </div>
   );
-}
+};
 
 export default CustomReport;
