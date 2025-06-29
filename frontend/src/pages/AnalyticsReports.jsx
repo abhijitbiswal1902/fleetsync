@@ -2,18 +2,25 @@ import React, { useEffect, useState } from 'react';
 import './AnalyticsReports.css'; 
 import Navbar from './Navbar';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const AnalyticsReports = () => {
   const [reports, setReports] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch data from API on component mount
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get('/api/fleet/report');  // Your backend API endpoint
+        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/api/fleet/report`);
         setReports(response.data);
       } catch (error) {
         console.error('Error fetching reports:', error);
+        setError('Failed to load analytics data. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -28,7 +35,7 @@ const AnalyticsReports = () => {
       <header className="reports-hero">
         <div className="hero-content">
           <h1>Analytics & Reports</h1>
-          <p>Gain valuable insights into your fleet’s performance with powerful analytics and reports.</p>
+          <p>Gain valuable insights into your fleet's performance with powerful analytics and reports.</p>
         </div>
         <div className="hero-image">
           {/* Add an image if needed */}
@@ -91,7 +98,11 @@ const AnalyticsReports = () => {
       <section className="fleet-report-section">
         <h2>Fleet Performance Report</h2>
         <div className="report-table">
-          {reports ? (
+          {loading ? (
+            <p>Loading reports...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : reports ? (
             <table>
               <thead>
                 <tr>
@@ -115,7 +126,7 @@ const AnalyticsReports = () => {
               </tbody>
             </table>
           ) : (
-            <p>Loading reports...</p>
+            <p>No reports found.</p>
           )}
         </div>
       </section>
